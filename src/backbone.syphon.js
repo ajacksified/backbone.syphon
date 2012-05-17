@@ -8,7 +8,7 @@ Backbone.Syphon = (function(Backbone, $, _){
   var defaultOptions = {
     ignore: ["[type=button]", "[type=submit]", "[type=reset]", "button"],
     attribute: 'id'
-  }
+  };
 
   // Syphon
   // ------
@@ -17,17 +17,17 @@ Backbone.Syphon = (function(Backbone, $, _){
   // all of the form inputs, in this view
   Syphon.serialize = function(view, options){
     var data = {};
-    var options = $.extend(defaultOptions, options);
+    var localOptions = $.extend(defaultOptions, options);
 
-    var elements = getInputElements(view, options.ignore);
+    var elements = getInputElements(view, localOptions.ignore);
 
     _.each(elements, function(el){
-      $el = $(el);
+      var $el = $(el);
       var type = getElementType($el); 
       var inputReader = Syphon.InputReaders.get(type);
       var value = inputReader($el);
 
-      data[$el.attr(options.attribute)] = value;
+      data[$el.attr(localOptions.attribute)] = value;
     });
 
     return data;
@@ -98,8 +98,8 @@ Backbone.Syphon = (function(Backbone, $, _){
   // Retrieve all of the form inputs
   // from the view
   var getInputElements = function(view, ignore){
-    var ignore = ignore.join(", ").replace(/"/,'\'');
-    return view.$("form input, form select, form textarea").filter(":not(" + ignore + ")");
+    var ignoreString = ignore.join(", ").replace(/"/,'\'');
+    return view.$("form input, form select, form textarea").filter(":not(" + ignoreString + ")");
   };
 
   // Determine what type of element this is. It
