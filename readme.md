@@ -158,8 +158,6 @@ is basically my "todo" list for the features that need to be implemented.
 
 * You must have a `<form>` within your view's `$el`
 * An input of type `checkbox` will return a boolean value
-* The key of the returned object's key/values will always be set to the `id` of the input element
-* Cannot add to, or remove from, the ignored input element types
 * Cannot specify specific fields to include
 * Cannot specify specific fields to ignore
 

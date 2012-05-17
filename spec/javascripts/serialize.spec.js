@@ -170,4 +170,49 @@ describe("serializing a form", function(){
     });
   });
 
+  describe("when serializing a text input by name instead of id", function(){
+    var View = Backbone.View.extend({
+      render: function(){
+        this.$el.html("<form><input type='text' name='foo' value='bar'></form>");
+      }
+    });
+
+    var view, result;
+
+    beforeEach(function(){
+      view = new View();
+      view.render();
+
+      result = Backbone.Syphon.serialize(view, { attribute: 'name' });
+    });
+
+    it("should return an object with a key from the text input name", function(){
+      expect(result.hasOwnProperty("foo")).toBe(true)
+    });
+
+    it("should have the input's value", function(){
+      expect(result.foo).toBe("bar");
+    });
+  });
+
+  describe("when customizing elements to ignore", function(){
+    var View = Backbone.View.extend({
+      render: function(){
+        this.$el.html("<form><input type='text' id='foo' value='bar'></form>");
+      }
+    });
+
+    var view, result;
+
+    beforeEach(function(){
+      view = new View();
+      view.render();
+
+      result = Backbone.Syphon.serialize(view, { ignore: [ "#foo" ] });
+    });
+
+    it("should not return an object with a key from the text input name", function(){
+      expect(result.hasOwnProperty("foo")).toBe(false)
+    });
+  });
 });

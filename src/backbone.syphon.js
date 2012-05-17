@@ -5,25 +5,29 @@ Backbone.Syphon = (function(Backbone, $, _){
   // --------------------
 
   // Tell Syphon to ignore all elements of these types
-  var ignoredTypes = ["button", "submit", "reset"];
+  var defaultOptions = {
+    ignore: ["[type=button]", "[type=submit]", "[type=reset]", "button"],
+    attribute: 'id'
+  }
 
   // Syphon
   // ------
 
   // Get a JSON object that represents
   // all of the form inputs, in this view
-  Syphon.serialize = function(view){
+  Syphon.serialize = function(view, options){
     var data = {};
+    var options = $.extend(defaultOptions, options);
 
-    var elements = getInputElements(view, ignoredTypes);
+    var elements = getInputElements(view, options.ignore);
 
     _.each(elements, function(el){
-      var $el = $(el);
+      $el = $(el);
       var type = getElementType($el); 
       var inputReader = Syphon.InputReaders.get(type);
       var value = inputReader($el);
 
-      data[el.id] = value;
+      data[$el.attr(options.attribute)] = value;
     });
 
     return data;
@@ -93,15 +97,9 @@ Backbone.Syphon = (function(Backbone, $, _){
 
   // Retrieve all of the form inputs
   // from the view
-  var getInputElements = function(view, ignoreTypes){
-    var form = view.$("form")[0];
-    var elements = form.elements;
-    elements = _.reject(elements, function(el){
-      var type = getElementType(el);
-      var found = _.include(ignoreTypes, type);
-      return found;
-    });
-    return elements;
+  var getInputElements = function(view, ignore){
+    var ignore = ignore.join(", ").replace(/"/,'\'');
+    return view.$("form input, form select, form textarea").filter(":not(" + ignore + ")");
   };
 
   // Determine what type of element this is. It
@@ -122,7 +120,7 @@ Backbone.Syphon = (function(Backbone, $, _){
         type = "text";
       }
     }
-    
+
     // Always return the type as lowercase
     // so it can be matched to lowercase
     // type registrations.
